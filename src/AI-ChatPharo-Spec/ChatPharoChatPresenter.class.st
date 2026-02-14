@@ -64,8 +64,10 @@ ChatPharoChatPresenter >> connectPresenters [
 		messagesLayout add: each presenter withConstraints: [ :constraints | constraints height: each height ] ].
 
 	messageTextField whenSubmitDo: [ :text | self sendMessage ].
+	messageTextField whenTextChangedDo: [ :text | self updateSubmitButtonState ].
 
 	submitButton action: [ self sendMessage ].
+	self updateSubmitButtonState.
 
 	cancelButton action: [
 			ChatPharoLogger logFrontend: 'Cancel button pressed in chat tab' details: (Dictionary new
@@ -75,8 +77,8 @@ ChatPharoChatPresenter >> connectPresenters [
 			self hideThinking.
 			cancelButton visible: false.
 			messageTextField text: ''.
-			submitButton enabled: true.
-			messageTextField enabled: true ].
+			messageTextField enabled: true.
+			self updateSubmitButtonState ].
 
 	newChatButton action: [
 			ChatPharoLogger logFrontend: 'New chat requested from chat tab' details: (Dictionary new
@@ -105,7 +107,7 @@ ChatPharoChatPresenter >> connectPresenters [
 			submitButton visible: true.
 			messagesLayout add: message presenter withConstraints: [ :constraints | constraints height: message height ].
 			messageTextField text: ''.
-			submitButton enabled: true.
+			self updateSubmitButtonState.
 			messageTextField enabled: true.
 			ChatPharoLogger logFrontend: 'Assistant message rendered' details: (Dictionary new
 					 at: 'chatId' put: model identityHash;
@@ -123,7 +125,7 @@ ChatPharoChatPresenter >> connectPresenters [
 			self hideThinking.
 			cancelButton visible: false.
 			self showError: errorMessage.
-			submitButton enabled: true.
+			self updateSubmitButtonState.
 			messageTextField enabled: true.
 			ChatPharoLogger logFrontend: 'Error displayed in transcript' details: (Dictionary new
 					 at: 'chatId' put: model identityHash;
@@ -292,15 +294,20 @@ ChatPharoChatPresenter >> reloadMessages [
 	model messages do: [ :each | messagesLayout add: each presenter ].
 	messageTextField text: ''.
 	cancelButton visible: false.
-	submitButton enabled: true.
-	messageTextField enabled: true
+	messageTextField enabled: true.
+	self updateSubmitButtonState
 ]
 
 { #category : 'initialization' }
 ChatPharoChatPresenter >> sendMessage [
 
 	| text attachmentsCopy parser result commandResponse |
-	text := messageTextField text. "Check if the text is a command (starts with / or @)"
+	text := (messageTextField text ifNil: [ '' ]) asString.
+	text trimBoth ifEmpty: [
+			ChatPharoLogger logFrontend: 'Send blocked - empty message' details: (Dictionary new
+					 at: 'chatId' put: model identityHash;
+					 yourself).
+			^ self ].
 	parser := ChatPharoCommandParser default.
 	result := parser parse: text.
 
@@ -310,9 +317,10 @@ ChatPharoChatPresenter >> sendMessage [
 					 at: 'command' put: result commandName;
 					 yourself).
 			messageTextField text: ''.
-			commandResponse := result execute: model. "Show command response as a system message"
+			self updateSubmitButtonState.
+			commandResponse := result execute: model. 
 			self showCommandResponse: commandResponse.
-			^ self ]. "Regular message handling"
+			^ self ].
 
 	model agent isConfigured ifFalse: [
 			ChatPharoLogger logFrontend: 'Send blocked - agent not configured' details: (Dictionary new
@@ -450,4 +458,12 @@ ChatPharoChatPresenter >> updateAttachedFilesDisplay [
 		fileRowPresenter layout: fileLayout.
 
 		attachedFilesLayout add: fileRowPresenter expand: false ]
+]
+
+{ #category : 'initialization' }
+ChatPharoChatPresenter >> updateSubmitButtonState [
+	"Enable submit only when the input has non-whitespace text"
+
+	submitButton enabled: (messageTextField isEnabled and: [
+		(messageTextField text ifNil: [ '' ]) asString trimBoth isNotEmpty ])
 ]
