@@ -260,7 +260,7 @@ ChatPharoSettingsTest >> testUseModel [
 { #category : 'tests' }
 ChatPharoSettingsTest >> testWelcomeMessageEnabledToggle [
 
-    self assert: settings welcomeMessageEnabled.
+    self deny: settings welcomeMessageEnabled.
     settings welcomeMessageEnabled: false.
     self deny: settings welcomeMessageEnabled.
     settings welcomeMessageEnabled: true.

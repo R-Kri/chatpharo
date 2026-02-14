@@ -72,7 +72,7 @@ ChatPharoBrowserExtensionSettingsPresenter >> defaultLayout [
 			add: (self newLabel label: '— Available Tools —') expand: false;
 			add: selectAllCheckbox expand: false;
 			yourself) expand: false;
-		add: scrollableToolsPane;
+		add: (SpScrollableLayout with: scrollableToolsPane);
 		yourself
 ]
 
