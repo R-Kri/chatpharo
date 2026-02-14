@@ -333,48 +333,48 @@ ChatPharoSetupPresenter >> showAdvisorDefaultsStep [
 	statusLabel label: ''.
 
 	infoLabel := self newLabel
-		label: 'The Advisor can automatically configure ChatPharo for optimal performance.';
-		yourself.
+		             label: 'The Advisor can automatically configure ChatPharo for optimal performance.';
+		             yourself.
 
 	descriptionText := self newText
-		text: ChatPharoSafetyAdvisor defaultSettingsDescription;
-		enabled: false;
-		yourself.
+		                   text: ChatPharoSafetyAdvisor defaultSettingsDescription;
+		                   enabled: false;
+		                   yourself.
 
 	settingsLabel := self newLabel
-		label: 'You can customize all settings later from the Settings menu.';
-		yourself.
+		                 label: 'You can customize all settings later from the Settings menu.';
+		                 yourself.
 
 	yesButton := self newButton
-		label: 'Yes, use recommended settings';
-		icon: (self iconNamed: #glamorousAccept);
-		action: [ self applyAdvisorDefaults ];
-		yourself.
+		             label: 'Yes, use recommended settings';
+		             icon: (self iconNamed: #glamorousAccept);
+		             action: [ self applyAdvisorDefaults ];
+		             yourself.
 
 	noButton := self newButton
-		label: 'No, I will configure manually';
-		icon: (self iconNamed: #glamorousCancel);
-		action: [ self skipAdvisorDefaults ];
-		yourself.
+		            label: 'No, I will configure manually';
+		            icon: (self iconNamed: #glamorousCancel);
+		            action: [ self skipAdvisorDefaults ];
+		            yourself.
 
 	defaultsContainer := SpBoxLayout newTopToBottom
-		spacing: 12;
-		add: infoLabel expand: false;
-		add: descriptionText expand: true;
-		add: settingsLabel expand: false;
-		yourself.
+		                     spacing: 12;
+		                     add: infoLabel expand: false;
+		                     add: descriptionText expand: true;
+		                     add: settingsLabel expand: false;
+		                     yourself.
 
 	buttonRow := SpBoxLayout newHorizontal
-		spacing: 8;
-		add: yesButton expand: false;
-		add: noButton expand: false;
-		yourself.
+		             spacing: 8;
+		             add: yesButton expand: true;
+		             add: noButton expand: true;
+		             yourself.
 
 	contentContainer layout: (SpBoxLayout newTopToBottom
-		spacing: 12;
-		add: defaultsContainer expand: true;
-		add: buttonRow expand: false;
-		yourself).
+			 spacing: 12;
+			 add: defaultsContainer expand: true;
+			 add: buttonRow expand: false;
+			 yourself).
 
 	self layout: self defaultLayout
 ]

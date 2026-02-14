@@ -301,3 +301,16 @@ ChatPharo >> settings [
 
 	^ settings
 ]
+
+{ #category : 'accessing' }
+ChatPharo >> synchronizeChatsWithSettingsAgent [
+
+	| configuredAgent |
+	configuredAgent := self settings agent.
+	chats do: [ :chat |
+			| chatAgent |
+			chatAgent := (configuredAgent isKindOf: ChatPharoAgent)
+				             ifTrue: [ configuredAgent copyForChat ]
+				             ifFalse: [ configuredAgent ].
+			chat agent: chatAgent ]
+]

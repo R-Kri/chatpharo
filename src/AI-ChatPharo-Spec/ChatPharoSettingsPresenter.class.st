@@ -79,21 +79,22 @@ ChatPharoSettingsPresenter >> connectPresenters [
 			ollamaModelDropList items ifNotEmpty: [
 					| selected |
 					selected := ollamaModelDropList items detect: [ :each | each = model agent model ] ifNone: [ nil ].
-					selected ifNotNil: [ ollamaModelDropList selectItem: selected ] ifNil: [ ollamaModelDropList selectFirst ] ] ]. 
+					selected ifNotNil: [ ollamaModelDropList selectItem: selected ] ifNil: [ ollamaModelDropList selectFirst ] ] ].
 	apiDropList whenSelectedItemChangedDo: [ :assoc |
 			| apiClass newPresenter |
-			apiClass := assoc value. 
+			apiClass := assoc value.
 			userAccepted := ChatPharoSafetyAdvisor confirmExternalApiUsageOn: self forAgent: apiClass.
-			userAccepted ifFalse: [ 
+			userAccepted ifFalse: [
 					apiDropList selectItem:
 						(model availableApiChoices detect: [ :a | a value = model agent class ] ifNone: [ model availableApiChoices first ]).
-				self ].
+					self ].
 			userAccepted ifTrue: [
-					model useApi: apiClass. 
+					model useApi: apiClass.
+					chatPharo ifNotNil: [ chatPharo synchronizeChatsWithSettingsAgent ].
 					apiSettingsContainer removeAll.
 					newPresenter := apiClass settingsPresenterFor: model agent.
-					newPresenter ifNotNil: [ apiSettingsContainer add: newPresenter ]. 
-					systemPromptInput text: model agent systemPrompt ] ]. 
+					newPresenter ifNotNil: [ apiSettingsContainer add: newPresenter ].
+					systemPromptInput text: model agent systemPrompt ] ].
 	systemPromptInput whenTextChangedDo: [ :text |
 			text ~= ChatPharoAgent defaultSystemPrompt ifTrue: [
 					(ChatPharoSafetyAdvisor confirmPromptModificationOn: self)
@@ -114,7 +115,7 @@ ChatPharoSettingsPresenter >> connectPresenters [
 											model maximumIterations: 1.
 											maxIterationsInput text: '1' ]
 									ifFalse: [ maxIterationsInput text: model maximumIterations asString ] ]
-						ifFalse: [ model maximumIterations: num ] ] ]. 
+						ifFalse: [ model maximumIterations: num ] ] ].
 	browserExtensionCheckBox whenChangedDo: [ :presenter |
 			model browserExtensionEnabled: presenter.
 			self updateBrowserExtensionTab ].
@@ -166,7 +167,7 @@ ChatPharoSettingsPresenter >> connectPresenters [
 			text isEmpty
 				ifTrue: [ model timeBudgetMinutes: nil ]
 				ifFalse: [ model timeBudgetMinutes: text asNumber ] ].
-			
+
 	requestTimeoutInput whenTextChangedDo: [ :text |
 			text isEmpty
 				ifTrue: [ model requestTimeoutSeconds: nil ]
