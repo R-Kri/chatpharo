@@ -315,20 +315,20 @@ ChatPharoPresenter >> openTutorial [
 
 { #category : 'initialization' }
 ChatPharoPresenter >> saveCurrentChat [
-
-	| fileReference jsonData currentChat |
+	| fileReference jsonData currentChat defaultFilename |
 	notebook selectedPage ifNil: [
 		^ self inform: 'No chat selected.' ].
 	currentChat := notebook selectedPage presenterProvider value.
 	jsonData := currentChat exportAsJson.
-
+	
+	"Generate unique default filename using chat title and counter"
+	defaultFilename := (notebook selectedPage title copyReplaceAll: ' ' with: '_'), '.json'.
+	
 	fileReference := UIManager default
 		chooseForSaveFileReference: 'Save chat'
 		extensions: #( 'json' )
-		path: FileLocator home.
-
+		path: FileLocator home / defaultFilename.
 	fileReference ifNil: [ ^ self ].
-
 	[
 		fileReference writeStreamDo: [ :stream |
 			stream nextPutAll: jsonData ].
