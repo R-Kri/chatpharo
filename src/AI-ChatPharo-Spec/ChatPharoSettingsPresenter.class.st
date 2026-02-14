@@ -72,24 +72,27 @@ ChatPharoSettingsPresenter >> chatPharo: anObject [
 ChatPharoSettingsPresenter >> connectPresenters [
 	"Refresh models on button action"
 
+	| userAccepted |
 	modelsRefreshButton action: [
 			ollamaModelDropList items: model models.
 			ollamaModelDropList items ifNotEmpty: [
 					| selected |
 					selected := ollamaModelDropList items detect: [ :each | each = model agent model ] ifNone: [ nil ].
-					selected ifNotNil: [ ollamaModelDropList selectItem: selected ] ifNil: [ ollamaModelDropList selectFirst ] ] ]. "Handle API dropdown selection"
+					selected ifNotNil: [ ollamaModelDropList selectItem: selected ] ifNil: [ ollamaModelDropList selectFirst ] ] ]. 
 	apiDropList whenSelectedItemChangedDo: [ :assoc |
 			| apiClass newPresenter |
-			apiClass := assoc value. "Show external API data warning if applicable"
-			(ChatPharoSafetyAdvisor confirmExternalApiUsageOn: self forAgent: apiClass) ifFalse: [ "User declined — revert to the current agent"
+			apiClass := assoc value. 
+			userAccepted := ChatPharoSafetyAdvisor confirmExternalApiUsageOn: self forAgent: apiClass.
+			userAccepted ifFalse: [ 
 					apiDropList selectItem:
 						(model availableApiChoices detect: [ :a | a value = model agent class ] ifNone: [ model availableApiChoices first ]).
-					^ self ].
-			model useApi: apiClass. "Clear old settings and install new presenter"
-			apiSettingsContainer removeAll.
-			newPresenter := apiClass settingsPresenterFor: model agent.
-			newPresenter ifNotNil: [ apiSettingsContainer add: newPresenter ]. "Update system prompt inputs"
-			systemPromptInput text: model agent systemPrompt ]. "Bind text inputs to model"
+				self ].
+			userAccepted ifTrue: [
+					model useApi: apiClass. 
+					apiSettingsContainer removeAll.
+					newPresenter := apiClass settingsPresenterFor: model agent.
+					newPresenter ifNotNil: [ apiSettingsContainer add: newPresenter ]. 
+					systemPromptInput text: model agent systemPrompt ] ]. 
 	systemPromptInput whenTextChangedDo: [ :text |
 			text ~= ChatPharoAgent defaultSystemPrompt ifTrue: [
 					(ChatPharoSafetyAdvisor confirmPromptModificationOn: self)
@@ -110,7 +113,7 @@ ChatPharoSettingsPresenter >> connectPresenters [
 											model maximumIterations: 1.
 											maxIterationsInput text: '1' ]
 									ifFalse: [ maxIterationsInput text: model maximumIterations asString ] ]
-						ifFalse: [ model maximumIterations: num ] ] ]. "Bind checkbox state to model"
+						ifFalse: [ model maximumIterations: num ] ] ]. 
 	browserExtensionCheckBox whenChangedDo: [ :presenter |
 			model browserExtensionEnabled: presenter.
 			self updateBrowserExtensionTab ].
