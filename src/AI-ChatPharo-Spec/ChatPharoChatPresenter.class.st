@@ -102,6 +102,7 @@ ChatPharoChatPresenter >> connectPresenters [
 			thinkingPresenter thinkingContent: (message thinking ifNil: [ '' ]).
 			self hideThinking.
 			cancelButton visible: false.
+			submitButton visible: true.
 			messagesLayout add: message presenter withConstraints: [ :constraints | constraints height: message height ].
 			messageTextField text: ''.
 			submitButton enabled: true.
@@ -140,10 +141,10 @@ ChatPharoChatPresenter >> defaultLayout [
 		  add: attachedFilesPresenter expand: false;
 		  add: (SpBoxLayout newHorizontal
 				   spacing: 5;
+				   add: moreMenuButton expand: false;
 				   add: messageTextField;
 				   add: submitButton expand: false;
 				   add: cancelButton expand: false;
-				   add: moreMenuButton expand: false;
 				   yourself)
 		  expand: false;
 		  yourself
@@ -209,14 +210,15 @@ ChatPharoChatPresenter >> initializePresenters [
 
 	submitButton := self newButton
 		                label: '';
-		                icon: (self iconNamed: #glamorousGo);
+		                icon: (self iconNamed: #smallDoIt);
 		                help: 'Submit prompt';
 		                yourself.
 
 	cancelButton := self newButton
 		                label: '';
-		                icon: (self iconNamed: #delete);
+		                icon: (self iconNamed: #smallCancel);
 		                help: 'Cancel prompt';
+		                visible: false;
 		                yourself.
 
 	newChatButton := self newButton
@@ -240,7 +242,6 @@ ChatPharoChatPresenter >> initializePresenters [
 		                 yourself.
 
 	moreMenuButton := self newButton
-		                  label: 'More';
 		                  icon: (self iconNamed: #add);
 		                  help: 'More options';
 		                  yourself.
@@ -327,7 +328,7 @@ ChatPharoChatPresenter >> sendMessage [
 			 at: 'agent' put: (ChatPharoLogger agentNameFor: model agent);
 			 yourself).
 	attachmentsCopy := attachedFiles copy.
-	submitButton enabled: false.
+	submitButton visible: false.
 	cancelButton visible: true.
 	messageTextField enabled: false.
 	messageTextField text: ''.
