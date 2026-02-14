@@ -103,7 +103,7 @@ ChatPharoSettings class >> loadOrNew [
 				  settings maximumIterations.
 				  settings cacheEnabled ifNil: [ settings cacheEnabled: true ].
 				  settings feedbackButtonsEnabled ifNil: [ settings feedbackButtonsEnabled: true ].
-				  settings welcomeMessageEnabled ifNil: [ settings welcomeMessageEnabled: true ].
+				  settings welcomeMessageEnabled ifNil: [ settings welcomeMessageEnabled: false ].
 				  settings loggingEnabled.
 				  settings askFeatureEnabled ifNil: [ settings askFeatureEnabled: true ].
 				  settings codeFeatureEnabled ifNil: [ settings codeFeatureEnabled: true ].
@@ -648,7 +648,7 @@ ChatPharoSettings >> initialize [
 	browserAutoTabEnabled := true.
 	cacheEnabled := true.
 	feedbackButtonsEnabled := true.
-	welcomeMessageEnabled := true.
+	welcomeMessageEnabled := false.
 	loggingEnabled := true.
 	askFeatureEnabled := true.
 	codeFeatureEnabled := true.
@@ -1477,7 +1477,7 @@ ChatPharoSettings >> wantsTutorial: aBoolean [
 { #category : 'accessing' }
 ChatPharoSettings >> welcomeMessageEnabled [ 
 
-       ^ welcomeMessageEnabled ifNil: [ true ]
+       ^ welcomeMessageEnabled ifNil: [ false ]
 ]
 
 { #category : 'accessing' }

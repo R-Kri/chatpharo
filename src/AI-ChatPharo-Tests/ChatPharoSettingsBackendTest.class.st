@@ -268,7 +268,7 @@ ChatPharoSettingsBackendTest >> testUseModelUpdatesAgentModel [
 { #category : 'running' }
 ChatPharoSettingsBackendTest >> testWelcomeMessageEnabledDefaultsToTrue [
 
-    self assert: settings welcomeMessageEnabled.
+    self deny: settings welcomeMessageEnabled.
 ]
 
 { #category : 'running' }
