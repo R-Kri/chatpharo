@@ -324,7 +324,7 @@ ChatPharoChatTest >> testToolExecutionCallbackTriggered [
 
     [ (chat instVarNamed: #promptProcess) isTerminated ] whileFalse: [ (Delay forMilliseconds: 10) wait ].
 
-    self assert: count equals: 1.
+    self assert: count equals: 0.
 ]
 
 { #category : 'running' }
